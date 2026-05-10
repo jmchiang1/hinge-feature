@@ -1,0 +1,1870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hinge — High Fidelity Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/[email protected]/tabler-icons.min.css">
+<script src="https://unpkg.com/@phosphor-icons/web" defer></script>
+<style>
+  :root {
+    --bg-page: #E8E2D5;
+    --bg-app: #FFFEFD;
+    --bg-card: #FFFFFF;
+    --bg-warm: #F0EBE2;
+    --bg-warm-2: #ECE5D8;
+    --text-primary: #000000;
+    --text-body: #1A1A1A;
+    --text-secondary: #5C5346;
+    --text-tertiary: #908572;
+    --text-quaternary: #B5AB97;
+    --border-warm: #E8E3DA;
+    --border-light: #EFEAE0;
+    --hinge-purple: #4B2D7A;
+    --hinge-purple-mid: #6B47A8;
+    --hinge-purple-light: #E0D4ED;
+    --hinge-purple-soft: #F1E9F8;
+    --verified-purple: #7B4BBC;
+    --active-green: #00A86B;
+    --teal: #0F6E56;
+    --teal-light: #D4ECE3;
+    --tab-bg: #1A1A1A;
+    --tab-inactive: #7A7268;
+    --tab-active: #FFFFFF;
+    --rose-bg: #DDC9E5;
+    --rose-bg-soft: #ECE0F0;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: var(--text-body);
+  }
+
+  body {
+    background: var(--bg-page);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 28px 16px;
+    overflow-x: hidden;
+  }
+
+  /* ── Phone Frame ──────────────────────────────────────── */
+  .hp-phone {
+    width: 390px;
+    height: 844px;
+    background: var(--bg-app);
+    border-radius: 52px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow:
+      0 0 0 10px #1A1A1A,
+      0 0 0 12px #2A2A2A,
+      0 30px 60px -10px rgba(0,0,0,0.25),
+      0 18px 36px -18px rgba(0,0,0,0.2);
+  }
+
+  /* ── Status Bar ──────────────────────────────────────── */
+  .hp-status {
+    flex-shrink: 0;
+    padding: 18px 32px 4px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.4px;
+    height: 54px;
+    position: relative;
+    z-index: 5;
+  }
+  .hp-status .hp-time { font-variant-numeric: tabular-nums; }
+  .hp-status-icons {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .hp-status-icons i { font-size: 16px; color: var(--text-primary); }
+  .hp-status-icons i.ti-battery-filled { font-size: 22px; }
+
+  /* ── Screen Container ──────────────────────────────────────── */
+  .hp-screens {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+  .hp-screen {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease;
+    background: var(--bg-app);
+  }
+  .hp-screen.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .hp-screen::-webkit-scrollbar { display: none; }
+  .hp-screen { scrollbar-width: none; }
+
+  /* ── Tab Bar ──────────────────────────────────────── */
+  .hp-tabbar-wrap {
+    flex-shrink: 0;
+    background: var(--tab-bg);
+    padding: 12px 0 0 0;
+    position: relative;
+    z-index: 5;
+  }
+  .hp-tabbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 16px;
+    height: 54px;
+  }
+  .hp-tab {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    color: var(--tab-inactive);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 22px;
+    transition: color 0.15s;
+    flex-shrink: 0;
+  }
+  .hp-tab.active { color: var(--tab-active); }
+  .hp-tab i { font-size: 28px; }
+  .hp-tab svg { width: 28px; height: 28px; }
+  .hp-tab-icon {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    display: block;
+  }
+  .hp-tab-icon.is-selected { display: none; }
+  .hp-tab.active .hp-tab-icon.is-default { display: none; }
+  .hp-tab.active .hp-tab-icon.is-selected { display: block; }
+  .hp-tab-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #8a6b4a url('https://i.pravatar.cc/120?img=11') center/cover no-repeat;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  .hp-tab.active .hp-tab-avatar {
+    border-color: white;
+  }
+  .hp-tab-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: var(--hinge-purple-mid);
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    min-width: 22px;
+    height: 18px;
+    padding: 0 6px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    letter-spacing: -0.2px;
+  }
+  .hp-home-indicator {
+    height: 34px;
+    background: var(--tab-bg);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 9px;
+  }
+  .hp-home-indicator-bar {
+    width: 134px;
+    height: 5px;
+    background: white;
+    border-radius: 3px;
+  }
+
+  /* ──────────────────────────────────────────────────────── */
+  /* SCREEN 1: HOME / DISCOVER                                */
+  /* ──────────────────────────────────────────────────────── */
+  .hp-home-content {
+    padding: 0;
+  }
+
+  .hp-filter-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px 14px 16px;
+    overflow-x: auto;
+  }
+  .hp-filter-row::-webkit-scrollbar { display: none; }
+  .hp-filter-icon-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hp-filter-icon-btn i { font-size: 26px; color: var(--text-primary); line-height: 1; }
+  .hp-chip {
+    flex-shrink: 0;
+    background: white;
+    border: 1px solid var(--border-warm);
+    border-radius: 22px;
+    padding: 9px 12px 9px 18px;
+    font-size: 14.5px;
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: inherit;
+    letter-spacing: -0.2px;
+  }
+  .hp-chip i { font-size: 16px; line-height: 1; color: var(--text-primary); }
+
+  .hp-nudge {
+    margin: 0 16px 18px;
+    background: var(--hinge-purple-soft);
+    border-radius: 14px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .hp-nudge-icon {
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    border: 2px solid var(--hinge-purple);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hp-nudge-icon i { font-size: 22px; color: var(--hinge-purple); }
+  .hp-nudge-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+    line-height: 1.25;
+  }
+  .hp-nudge-sub {
+    font-size: 14.5px;
+    color: var(--text-body);
+    margin-top: 2px;
+    letter-spacing: -0.1px;
+  }
+
+  .hp-discover-profile {
+    padding: 0 16px 24px;
+  }
+  .hp-discover-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 4px 4px 16px;
+  }
+  .hp-discover-name-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .hp-discover-name {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -1.5px;
+    line-height: 1;
+  }
+  .hp-discover-active {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding-top: 6px;
+  }
+  .hp-discover-active-dot {
+    width: 9px;
+    height: 9px;
+    background: var(--active-green);
+    border-radius: 50%;
+  }
+  .hp-discover-active-text {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--active-green);
+    letter-spacing: -0.2px;
+  }
+  .hp-discover-verified {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .hp-discover-verified-text {
+    font-size: 14.5px;
+    color: var(--verified-purple);
+    font-weight: 500;
+    letter-spacing: -0.2px;
+  }
+  .hp-verified-badge {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+  .hp-discover-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding-top: 8px;
+  }
+  .hp-icon-btn {
+    background: none;
+    border: none;
+    padding: 6px;
+    cursor: pointer;
+    color: var(--text-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hp-icon-btn i { font-size: 26px; line-height: 1; }
+  .hp-icon-btn .ph-arrow-bend-up-left { color: var(--text-quaternary); }
+  .hp-icon-btn .ph-dots-three { color: var(--text-primary); font-size: 28px; }
+
+  .hp-photo-card {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    background: #1a1a1a;
+    margin-bottom: 20px;
+  }
+  .hp-photo-card .hp-photo-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .hp-photo-card .hp-like-btn {
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+    width: 48px;
+    height: 48px;
+    background: #ffffff;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+    z-index: 2;
+    padding: 0;
+  }
+  .hp-photo-card .hp-like-btn svg {
+    width: 24px;
+    height: 24px;
+    display: block;
+  }
+  .hp-photo-card .hp-like-btn svg path {
+    fill: #C49A7A;
+  }
+
+  .hp-video-card {
+    width: 100%;
+    aspect-ratio: 1 / 0.78;
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    background: #0e0e0e;
+    margin-bottom: 20px;
+  }
+  .hp-video-card .hp-video-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: grayscale(100%) brightness(0.85) contrast(1.05);
+  }
+  .hp-video-x {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    width: 60px;
+    height: 60px;
+    background: #ffffff;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 2;
+    padding: 0;
+  }
+  .hp-video-x i {
+    font-size: 28px;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+  .hp-video-duration {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    z-index: 2;
+  }
+  .hp-video-tag {
+    position: absolute;
+    top: 14px;
+    left: 16px;
+    background: rgba(255,255,255,0.95);
+    border-radius: 6px;
+    padding: 3px 6px;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-primary);
+    z-index: 2;
+  }
+
+  /* ──────────────────────────────────────────────────────── */
+  /* SCREEN 2: STANDOUTS                                      */
+  /* ──────────────────────────────────────────────────────── */
+  .hp-standouts-header {
+    padding: 24px 24px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .hp-page-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -1.5px;
+    line-height: 1;
+  }
+  .hp-roses-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--rose-bg);
+    border: none;
+    border-radius: 22px;
+    padding: 9px 16px;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.2px;
+    margin-top: 6px;
+  }
+  .hp-roses-pill svg { width: 18px; height: 18px; }
+  .hp-standouts-sub {
+    padding: 0 24px 22px;
+    font-size: 16px;
+    color: var(--text-body);
+    line-height: 1.4;
+    letter-spacing: -0.2px;
+  }
+  .hp-standouts-sub b { font-weight: 700; color: var(--text-primary); }
+
+  .hp-standouts-deck {
+    padding: 12px 22px 30px;
+    position: relative;
+  }
+  .hp-refresh-pill {
+    background: white;
+    border: 1px solid var(--border-light);
+    border-radius: 22px;
+    padding: 7px 16px;
+    font-size: 13.5px;
+    color: var(--text-primary);
+    width: fit-content;
+    margin: 0 auto -10px auto;
+    position: relative;
+    z-index: 2;
+    font-weight: 500;
+    letter-spacing: -0.2px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  }
+  .hp-refresh-pill .hp-mono {
+    font-weight: 600;
+    margin-left: 6px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hp-standout-card {
+    background: white;
+    border-radius: 18px;
+    padding: 22px 22px 24px;
+    position: relative;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    width: 84%;
+    margin-left: 0;
+  }
+  .hp-standout-card-2 {
+    position: absolute;
+    right: -2%;
+    top: 20px;
+    width: 84%;
+    height: calc(100% - 40px);
+    background: white;
+    border-radius: 18px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    z-index: -1;
+  }
+  .hp-standout-photo {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    background: #d6c4a8 url('https://i.pravatar.cc/600?img=8') center/cover no-repeat;
+    position: relative;
+    overflow: hidden;
+  }
+  .hp-standout-name-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 30px;
+  }
+  .hp-standout-avatar {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: #ECE0CF url('https://i.pravatar.cc/120?img=8') center/cover no-repeat;
+    border: 1.5px solid #C9A87C;
+    flex-shrink: 0;
+  }
+  .hp-standout-name {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+  }
+
+  /* ──────────────────────────────────────────────────────── */
+  /* SCREEN 3: LIKES YOU                                      */
+  /* ──────────────────────────────────────────────────────── */
+  .hp-likes-header {
+    padding: 24px 24px 0;
+  }
+  .hp-likes-sub {
+    padding: 4px 24px 18px;
+    font-size: 16px;
+    color: var(--text-body);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: -0.2px;
+  }
+  .hp-likes-sub i {
+    font-size: 17px;
+    color: var(--text-tertiary);
+  }
+  .hp-likes-tabs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px 14px 16px;
+    overflow-x: auto;
+  }
+  .hp-likes-tabs::-webkit-scrollbar { display: none; }
+  .hp-sort-icon-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hp-sort-icon-btn i { font-size: 23px; color: var(--text-primary); }
+  .hp-pill-tab {
+    flex-shrink: 0;
+    background: white;
+    border: 1px solid var(--border-warm);
+    border-radius: 22px;
+    padding: 9px 18px;
+    font-size: 14.5px;
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.2px;
+  }
+  .hp-pill-tab.active {
+    background: var(--text-primary);
+    color: white;
+    border-color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  .hp-like-card {
+    margin: 0 16px 16px;
+    background: white;
+    border: 1px solid var(--border-light);
+    border-radius: 14px;
+    padding: 16px 16px 18px;
+  }
+  .hp-like-bubble {
+    display: inline-block;
+    background: var(--bg-warm-2);
+    border-radius: 12px 12px 12px 4px;
+    padding: 9px 14px;
+    font-size: 14.5px;
+    color: var(--text-primary);
+    font-style: italic;
+    margin-bottom: 12px;
+    letter-spacing: -0.2px;
+  }
+  .hp-like-name {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.7px;
+    margin-bottom: 14px;
+    line-height: 1;
+  }
+  .hp-like-photo {
+    width: 100%;
+    aspect-ratio: 1 / 1.05;
+    border-radius: 10px;
+    background: #4a5b68 url('https://i.pravatar.cc/600?img=51') center/cover no-repeat;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hp-like-row-bottom {
+    display: flex;
+    gap: 10px;
+    padding: 0 16px 18px;
+  }
+  .hp-like-card-mini {
+    flex: 1;
+    background: white;
+    border: 1px solid var(--border-light);
+    border-radius: 14px;
+    padding: 14px;
+    overflow: hidden;
+    height: 90px;
+  }
+  .hp-like-card-mini.tan { background: #F5E8D8; }
+  .hp-like-bubble-mini {
+    display: inline-block;
+    background: var(--bg-warm-2);
+    border-radius: 10px 10px 10px 4px;
+    padding: 6px 10px;
+    font-size: 12.5px;
+    color: var(--text-primary);
+    font-style: italic;
+    letter-spacing: -0.2px;
+  }
+  .hp-like-card-mini.tan .hp-like-bubble-mini {
+    background: rgba(255,255,255,0.65);
+  }
+
+  /* ──────────────────────────────────────────────────────── */
+  /* SCREEN 4: MATCHES                                        */
+  /* ──────────────────────────────────────────────────────── */
+  .hp-matches-header {
+    padding: 24px 24px 14px;
+  }
+  .hp-section-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px 12px;
+  }
+  .hp-section-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+  }
+  .hp-section-row i { font-size: 22px; color: var(--text-primary); }
+  .hp-match-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 24px;
+    border-top: 1px solid var(--border-light);
+    background: var(--bg-app);
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+  .hp-match-row:hover { background: rgba(0,0,0,0.02); }
+  .hp-match-row:active { background: rgba(0,0,0,0.04); }
+  .hp-match-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+  .hp-avatar-1 { background: #c9b89e url('https://i.pravatar.cc/200?img=12') center/cover no-repeat; }
+  .hp-avatar-2 { background: #d4cabc url('https://i.pravatar.cc/200?img=15') center/cover no-repeat; }
+  .hp-avatar-3 { background: #b9aa90 url('https://i.pravatar.cc/200?img=33') center/cover no-repeat; }
+  .hp-avatar-4 { background: #d6cab2 url('https://i.pravatar.cc/200?img=68') center/cover no-repeat; }
+  .hp-avatar-5 { background: #c4b8a4 url('https://i.pravatar.cc/200?img=51') center/cover no-repeat; }
+  .hp-match-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .hp-match-name {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.4px;
+    margin-bottom: 2px;
+  }
+  .hp-match-msg {
+    font-size: 15px;
+    color: var(--text-primary);
+    font-weight: 500;
+    letter-spacing: -0.2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .hp-match-msg.muted {
+    color: var(--text-quaternary);
+    font-weight: 400;
+  }
+  .hp-start-chat {
+    background: var(--teal);
+    color: white;
+    border: none;
+    border-radius: 22px;
+    padding: 10px 18px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.1px;
+    flex-shrink: 0;
+  }
+
+  /* ──────────────────────────────────────────────────────── */
+  /* SCREEN 5: PROFILE                                        */
+  /* ──────────────────────────────────────────────────────── */
+  .hp-profile-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 22px 4px;
+  }
+  .hp-hinge-wordmark {
+    height: 28px;
+    display: flex;
+    align-items: center;
+  }
+  .hp-hinge-wordmark img {
+    height: 24px;
+    width: auto;
+    display: block;
+  }
+  .hp-profile-top-actions {
+    display: flex;
+    gap: 4px;
+  }
+  .hp-profile-avatar-section {
+    padding: 22px 24px 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .hp-profile-avatar-wrap {
+    position: relative;
+    width: 132px;
+    height: 132px;
+  }
+  .hp-profile-avatar-ring {
+    width: 132px;
+    height: 132px;
+    border-radius: 50%;
+    border: 3px solid var(--hinge-purple);
+    padding: 5px;
+    background: white;
+  }
+  .hp-profile-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: #d8c2a8 url('https://i.pravatar.cc/400?img=11') center/cover no-repeat;
+  }
+  .hp-edit-pencil {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 30px;
+    height: 30px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    border: 1.5px solid var(--hinge-purple);
+  }
+  .hp-edit-pencil i { font-size: 16px; color: var(--text-primary); }
+  .hp-profile-name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .hp-profile-name {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.8px;
+  }
+  .hp-profile-tabs {
+    display: flex;
+    margin-top: 22px;
+    border-bottom: 0.5px solid var(--border-warm);
+  }
+  .hp-profile-tab {
+    flex: 1;
+    text-align: center;
+    padding: 12px 0 14px;
+    font-size: 17px;
+    color: var(--text-quaternary);
+    font-weight: 500;
+    cursor: pointer;
+    position: relative;
+    letter-spacing: -0.3px;
+  }
+  .hp-profile-tab.active {
+    color: var(--text-primary);
+    font-weight: 700;
+  }
+  .hp-profile-tab.active::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2.5px;
+    background: var(--text-primary);
+  }
+
+  .hp-hingex-card {
+    margin: 18px 22px 18px;
+    height: 280px;
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    background:
+      radial-gradient(circle at 70% 30%, #4a4540 0%, transparent 40%),
+      linear-gradient(135deg, #1a1a1a 0%, #2a2520 30%, #161311 70%, #0c0a08 100%);
+  }
+  .hp-hingex-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 35% 60%, rgba(60,40,30,0.4) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 30%, rgba(80,60,50,0.4) 0%, transparent 45%);
+  }
+  .hp-hingex-content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    padding: 0 24px;
+    z-index: 2;
+  }
+  .hp-hingex-logo {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-bottom: 14px;
+    line-height: 1;
+  }
+  .hp-hingex-logo img {
+    height: 30px;
+    width: auto;
+    display: block;
+  }
+  .hp-hingex-logo i {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -1.2px;
+    font-family: 'Times New Roman', serif;
+    font-style: italic;
+    color: white;
+  }
+  .hp-hingex-text {
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.4px;
+    margin-bottom: 22px;
+    max-width: 240px;
+  }
+  .hp-hingex-cta {
+    background: white;
+    color: var(--text-primary);
+    border: none;
+    border-radius: 22px;
+    padding: 10px 32px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.2px;
+  }
+  .hp-hingex-card-2 {
+    position: absolute;
+    right: -100%;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    background: linear-gradient(135deg, #5a8da3 0%, #2c5673 100%);
+    border-radius: 14px;
+  }
+
+  .hp-perk-card {
+    margin: 0 22px 12px;
+    background: white;
+    border: 1px solid var(--border-light);
+    border-radius: 14px;
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+  }
+  .hp-perk-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .hp-perk-icon.boost { background: var(--teal-light); }
+  .hp-perk-icon.boost i { color: var(--teal); font-size: 24px; }
+  .hp-perk-icon.roses { background: var(--hinge-purple-soft); }
+  .hp-perk-icon.roses svg { width: 24px; height: 24px; }
+  .hp-perk-counter {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    background: var(--hinge-purple-mid);
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid white;
+  }
+  .hp-perk-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.4px;
+    margin-bottom: 1px;
+  }
+  .hp-perk-sub {
+    font-size: 14.5px;
+    color: var(--text-secondary);
+    letter-spacing: -0.2px;
+  }
+
+  /* misc */
+  .hp-spacer { height: 24px; }
+  .hp-spacer-lg { height: 96px; }
+
+  /* Floating skip (X) — pinned bottom-left of the discover viewport */
+  .hp-floating-x {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    width: 60px;
+    height: 60px;
+    background: #ffffff;
+    border: none;
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.18), 0 2px 4px rgba(0,0,0,0.08);
+    z-index: 6;
+    padding: 0;
+  }
+  .hp-floating-x svg {
+    width: 22px;
+    height: 22px;
+    display: block;
+  }
+  .hp-phone[data-active-screen="home"] .hp-floating-x {
+    display: flex;
+  }
+
+  /* ──────────────────────────────────────────────────────── */
+  /* SCREEN 6: CHAT (Ohbad)                                   */
+  /* ──────────────────────────────────────────────────────── */
+  .hp-phone.in-chat .hp-tabbar-wrap { display: none; }
+
+  .hp-screen[data-screen="chat-ohbad"] {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-app);
+  }
+
+  .hp-chat-header {
+    flex-shrink: 0;
+    padding: 8px 16px 0;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--bg-app);
+  }
+  .hp-chat-back-btn,
+  .hp-chat-dots-btn {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hp-chat-back-btn i { font-size: 28px; }
+  .hp-chat-dots-btn { margin-left: auto; }
+  .hp-chat-dots-btn i { font-size: 26px; }
+  .hp-chat-name {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.6px;
+  }
+
+  .hp-chat-tabs {
+    flex-shrink: 0;
+    display: flex;
+    position: relative;
+    border-bottom: 0.5px solid var(--border-warm);
+    margin-top: 16px;
+    padding: 0 16px;
+  }
+  .hp-chat-tabs::before {
+    content: "/";
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+    color: var(--text-quaternary);
+    font-weight: 300;
+    pointer-events: none;
+    line-height: 1.2;
+  }
+  .hp-chat-tab {
+    flex: 1;
+    text-align: center;
+    padding: 10px 0 16px;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--text-quaternary);
+    cursor: pointer;
+    position: relative;
+    letter-spacing: -0.3px;
+  }
+  .hp-chat-tab.active {
+    color: var(--hinge-purple);
+    font-weight: 700;
+  }
+  .hp-chat-tab.active::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 22%;
+    right: 22%;
+    height: 3px;
+    background: var(--hinge-purple);
+    border-radius: 2px;
+  }
+
+  .hp-chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 16px 8px;
+    display: flex;
+    flex-direction: column;
+  }
+  .hp-chat-messages::-webkit-scrollbar { display: none; }
+  .hp-chat-messages { scrollbar-width: none; }
+
+  .hp-chat-timestamp {
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--text-tertiary);
+    margin: 18px 0 10px;
+    letter-spacing: -0.1px;
+  }
+  .hp-chat-timestamp .day {
+    font-weight: 600;
+    color: var(--text-tertiary);
+    margin-right: 6px;
+  }
+
+  .hp-msg-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+  .hp-msg-row.received { align-self: flex-start; max-width: 100%; }
+  .hp-msg-row.sent { align-self: flex-end; max-width: 80%; }
+  .hp-msg-row.system { align-self: center; }
+
+  .hp-chat-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: #E0DACF url('https://i.pravatar.cc/120?img=12') center/cover no-repeat;
+    border: 0.5px solid rgba(0,0,0,0.04);
+  }
+
+  .hp-bubble-received {
+    background: var(--bg-warm-2);
+    color: var(--text-primary);
+    padding: 11px 16px;
+    border-radius: 20px 20px 20px 6px;
+    font-size: 16px;
+    line-height: 1.3;
+    letter-spacing: -0.2px;
+  }
+
+  .hp-bubble-sent {
+    background: var(--hinge-purple);
+    color: white;
+    padding: 13px 18px;
+    border-radius: 22px 22px 6px 22px;
+    font-size: 16px;
+    line-height: 1.4;
+    letter-spacing: -0.1px;
+    word-wrap: break-word;
+  }
+
+  .hp-bubble-system {
+    background: var(--bg-warm-2);
+    color: var(--text-primary);
+    padding: 11px 18px;
+    border-radius: 22px;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: -0.2px;
+  }
+
+  .hp-msg-meta {
+    align-self: flex-end;
+    font-size: 12.5px;
+    color: var(--text-tertiary);
+    margin-top: 4px;
+    margin-right: 4px;
+    letter-spacing: -0.1px;
+  }
+
+  .hp-photo-msg {
+    position: relative;
+    width: 240px;
+    flex-shrink: 0;
+  }
+  .hp-photo-msg-img {
+    width: 100%;
+    aspect-ratio: 1 / 1.18;
+    border-radius: 14px;
+    background: #c8a888 url('https://i.pravatar.cc/600?img=12') center/cover no-repeat;
+    position: relative;
+    overflow: hidden;
+  }
+  .hp-photo-bubble {
+    position: absolute;
+    bottom: 14px;
+    left: -8px;
+    background: var(--bg-warm-2);
+    padding: 10px 16px;
+    border-radius: 16px;
+    font-size: 15px;
+    font-style: italic;
+    color: var(--text-primary);
+    letter-spacing: -0.2px;
+    z-index: 2;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+
+  .hp-double-tap-hint {
+    flex-shrink: 0;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-quaternary);
+    padding: 14px 0 8px;
+    letter-spacing: -0.1px;
+  }
+
+  .hp-composer {
+    flex-shrink: 0;
+    padding: 4px 14px 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-app);
+  }
+  .hp-composer-input {
+    flex: 1;
+    background: white;
+    border: 0.5px solid var(--border-warm);
+    border-radius: 22px;
+    padding: 0 18px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    font-size: 15.5px;
+    color: var(--text-quaternary);
+    letter-spacing: -0.2px;
+    cursor: text;
+  }
+  .hp-composer-mic {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--bg-warm-2);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .hp-composer-mic i { font-size: 22px; color: var(--text-secondary); }
+
+  .hp-chat-home-indicator {
+    flex-shrink: 0;
+    height: 32px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 9px;
+    background: var(--bg-app);
+  }
+  .hp-chat-home-indicator-bar {
+    width: 134px;
+    height: 5px;
+    background: var(--text-primary);
+    border-radius: 3px;
+  }
+
+  /* ──────────────────────────────────────────────────────── */
+  /* ACTION SHEET (... menu)                                  */
+  /* ──────────────────────────────────────────────────────── */
+  .hp-action-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s ease;
+    z-index: 30;
+    border-radius: 52px;
+  }
+  .hp-phone.show-actions .hp-action-backdrop {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .hp-action-sheet {
+    position: absolute;
+    bottom: 12px;
+    left: 8px;
+    right: 8px;
+    z-index: 31;
+    transform: translateY(140%);
+    transition: transform 0.34s cubic-bezier(0.32, 0.72, 0, 1);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .hp-phone.show-actions .hp-action-sheet {
+    transform: translateY(0);
+  }
+  .hp-action-group {
+    background: rgba(255,255,255,0.95);
+    border-radius: 14px;
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  .hp-action-btn {
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 18px 16px;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-family: inherit;
+    cursor: pointer;
+    text-align: center;
+    letter-spacing: -0.3px;
+    border-bottom: 0.5px solid rgba(0,0,0,0.1);
+    transition: background 0.1s;
+  }
+  .hp-action-btn:last-child { border-bottom: none; }
+  .hp-action-btn:active { background: rgba(0,0,0,0.06); }
+  .hp-action-btn.danger { color: #FF3B30; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="hp-phone" id="hp-phone" data-active-screen="home">
+
+  <!-- Status Bar -->
+  <div class="hp-status">
+    <span class="hp-time">9:41</span>
+    <div class="hp-status-icons">
+      <i class="ti ti-antenna-bars-5"></i>
+      <i class="ti ti-wifi"></i>
+      <i class="ti ti-battery-filled"></i>
+    </div>
+  </div>
+
+  <!-- Screens -->
+  <div class="hp-screens">
+
+    <!-- ────────────────────────────────────────── -->
+    <!-- SCREEN 1: HOME / DISCOVER -->
+    <!-- ────────────────────────────────────────── -->
+    <div class="hp-screen" data-screen="home">
+      <div class="hp-home-content">
+        <div class="hp-filter-row">
+          <button class="hp-filter-icon-btn" aria-label="Filters">
+            <i class="ph ph-faders-horizontal"></i>
+          </button>
+          <button class="hp-chip">Age <i class="ph ph-caret-down"></i></button>
+          <button class="hp-chip">Height <i class="ph ph-caret-down"></i></button>
+          <button class="hp-chip">Dating Intentions <i class="ph ph-caret-down"></i></button>
+        </div>
+
+
+        <div class="hp-discover-profile">
+          <div class="hp-discover-header">
+            <div>
+              <div class="hp-discover-name-row">
+                <div class="hp-discover-name">Jonathan</div>
+                <div class="hp-discover-active">
+                  <span class="hp-discover-active-dot"></span>
+                  <span class="hp-discover-active-text">Active now</span>
+                </div>
+              </div>
+              <div class="hp-discover-verified">
+                <svg class="hp-verified-badge" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 1l2.4 1.7 2.9-.4 1.6 2.5 2.7 1.2-.4 2.9 1.4 2.6-1.9 2.3.4 2.9-2.7 1.2-1.6 2.5-2.9-.4L12 23l-2.4-1.7-2.9.4-1.6-2.5-2.7-1.2.4-2.9L1.5 12 3.4 9.7 3 6.8l2.7-1.2L7.3 3.1l2.9.4L12 1z" fill="#7B4BBC"/>
+                  <path d="M8 12.5l2.5 2.5L16 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+                <span class="hp-discover-verified-text">Verified</span>
+              </div>
+            </div>
+            <div class="hp-discover-actions">
+              <button class="hp-icon-btn" aria-label="Pass">
+                <i class="ph ph-arrow-bend-up-left"></i>
+              </button>
+              <button class="hp-icon-btn" aria-label="More">
+                <i class="ph-bold ph-dots-three"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="hp-photo-card">
+            <img class="hp-photo-img" src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=900&q=80&auto=format&fit=crop" alt="Iris">
+            <button class="hp-like-btn" aria-label="Like photo">
+              <svg viewBox="0 0 24 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16.2051 0C20.3861 0.000218523 23.7754 3.39019 23.7754 7.57129C23.7753 9.51114 23.0446 11.2796 21.8447 12.6191H21.8506L21.8213 12.6455C21.5335 12.9639 21.2185 13.2568 20.8809 13.5225L18.8242 15.4385H13.9062L18.877 10.3633H18.834C19.4141 9.68654 19.7655 8.80792 19.7656 7.84668C19.7656 5.70917 18.033 3.97585 15.8955 3.97559C14.2116 3.97559 12.7795 5.05131 12.2471 6.55273H11.3066C10.7743 5.05128 9.34214 3.97559 7.6582 3.97559C5.52068 3.97577 3.78809 5.70912 3.78809 7.84668C3.7882 8.80795 4.13955 9.68653 4.71973 10.3633H4.70996L4.78906 10.4443C4.85138 10.5131 4.91732 10.5784 4.98438 10.6426L11.7842 17.5664L11.7705 17.5811L14.1338 19.8096L11.6689 22.1064L2.66309 13.334C2.40432 13.1134 2.16054 12.8761 1.93359 12.623L1.92969 12.6191H1.93066C0.730736 11.2796 0.000122442 9.51122 0 7.57129C0 3.39007 3.3891 3.29867e-05 7.57031 0C9.17532 0 10.6629 0.500591 11.8877 1.35254C13.1124 0.500689 14.6002 0 16.2051 0Z"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="hp-photo-card">
+            <img class="hp-photo-img" src="https://images.unsplash.com/photo-1521119989659-a83eee488004?w=900&q=80&auto=format&fit=crop" alt="">
+            <button class="hp-like-btn" aria-label="Like photo">
+              <svg viewBox="0 0 24 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16.2051 0C20.3861 0.000218523 23.7754 3.39019 23.7754 7.57129C23.7753 9.51114 23.0446 11.2796 21.8447 12.6191H21.8506L21.8213 12.6455C21.5335 12.9639 21.2185 13.2568 20.8809 13.5225L18.8242 15.4385H13.9062L18.877 10.3633H18.834C19.4141 9.68654 19.7655 8.80792 19.7656 7.84668C19.7656 5.70917 18.033 3.97585 15.8955 3.97559C14.2116 3.97559 12.7795 5.05131 12.2471 6.55273H11.3066C10.7743 5.05128 9.34214 3.97559 7.6582 3.97559C5.52068 3.97577 3.78809 5.70912 3.78809 7.84668C3.7882 8.80795 4.13955 9.68653 4.71973 10.3633H4.70996L4.78906 10.4443C4.85138 10.5131 4.91732 10.5784 4.98438 10.6426L11.7842 17.5664L11.7705 17.5811L14.1338 19.8096L11.6689 22.1064L2.66309 13.334C2.40432 13.1134 2.16054 12.8761 1.93359 12.623L1.92969 12.6191H1.93066C0.730736 11.2796 0.000122442 9.51122 0 7.57129C0 3.39007 3.3891 3.29867e-05 7.57031 0C9.17532 0 10.6629 0.500591 11.8877 1.35254C13.1124 0.500689 14.6002 0 16.2051 0Z"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="hp-photo-card">
+            <img class="hp-photo-img" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=900&q=80&auto=format&fit=crop" alt="">
+            <button class="hp-like-btn" aria-label="Like photo">
+              <svg viewBox="0 0 24 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16.2051 0C20.3861 0.000218523 23.7754 3.39019 23.7754 7.57129C23.7753 9.51114 23.0446 11.2796 21.8447 12.6191H21.8506L21.8213 12.6455C21.5335 12.9639 21.2185 13.2568 20.8809 13.5225L18.8242 15.4385H13.9062L18.877 10.3633H18.834C19.4141 9.68654 19.7655 8.80792 19.7656 7.84668C19.7656 5.70917 18.033 3.97585 15.8955 3.97559C14.2116 3.97559 12.7795 5.05131 12.2471 6.55273H11.3066C10.7743 5.05128 9.34214 3.97559 7.6582 3.97559C5.52068 3.97577 3.78809 5.70912 3.78809 7.84668C3.7882 8.80795 4.13955 9.68653 4.71973 10.3633H4.70996L4.78906 10.4443C4.85138 10.5131 4.91732 10.5784 4.98438 10.6426L11.7842 17.5664L11.7705 17.5811L14.1338 19.8096L11.6689 22.1064L2.66309 13.334C2.40432 13.1134 2.16054 12.8761 1.93359 12.623L1.92969 12.6191H1.93066C0.730736 11.2796 0.000122442 9.51122 0 7.57129C0 3.39007 3.3891 3.29867e-05 7.57031 0C9.17532 0 10.6629 0.500591 11.8877 1.35254C13.1124 0.500689 14.6002 0 16.2051 0Z"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="hp-photo-card">
+            <img class="hp-photo-img" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=900&q=80&auto=format&fit=crop" alt="">
+            <button class="hp-like-btn" aria-label="Like photo">
+              <svg viewBox="0 0 24 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16.2051 0C20.3861 0.000218523 23.7754 3.39019 23.7754 7.57129C23.7753 9.51114 23.0446 11.2796 21.8447 12.6191H21.8506L21.8213 12.6455C21.5335 12.9639 21.2185 13.2568 20.8809 13.5225L18.8242 15.4385H13.9062L18.877 10.3633H18.834C19.4141 9.68654 19.7655 8.80792 19.7656 7.84668C19.7656 5.70917 18.033 3.97585 15.8955 3.97559C14.2116 3.97559 12.7795 5.05131 12.2471 6.55273H11.3066C10.7743 5.05128 9.34214 3.97559 7.6582 3.97559C5.52068 3.97577 3.78809 5.70912 3.78809 7.84668C3.7882 8.80795 4.13955 9.68653 4.71973 10.3633H4.70996L4.78906 10.4443C4.85138 10.5131 4.91732 10.5784 4.98438 10.6426L11.7842 17.5664L11.7705 17.5811L14.1338 19.8096L11.6689 22.1064L2.66309 13.334C2.40432 13.1134 2.16054 12.8761 1.93359 12.623L1.92969 12.6191H1.93066C0.730736 11.2796 0.000122442 9.51122 0 7.57129C0 3.39007 3.3891 3.29867e-05 7.57031 0C9.17532 0 10.6629 0.500591 11.8877 1.35254C13.1124 0.500689 14.6002 0 16.2051 0Z"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="hp-photo-card">
+            <img class="hp-photo-img" src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=900&q=80&auto=format&fit=crop" alt="">
+            <button class="hp-like-btn" aria-label="Like photo">
+              <svg viewBox="0 0 24 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16.2051 0C20.3861 0.000218523 23.7754 3.39019 23.7754 7.57129C23.7753 9.51114 23.0446 11.2796 21.8447 12.6191H21.8506L21.8213 12.6455C21.5335 12.9639 21.2185 13.2568 20.8809 13.5225L18.8242 15.4385H13.9062L18.877 10.3633H18.834C19.4141 9.68654 19.7655 8.80792 19.7656 7.84668C19.7656 5.70917 18.033 3.97585 15.8955 3.97559C14.2116 3.97559 12.7795 5.05131 12.2471 6.55273H11.3066C10.7743 5.05128 9.34214 3.97559 7.6582 3.97559C5.52068 3.97577 3.78809 5.70912 3.78809 7.84668C3.7882 8.80795 4.13955 9.68653 4.71973 10.3633H4.70996L4.78906 10.4443C4.85138 10.5131 4.91732 10.5784 4.98438 10.6426L11.7842 17.5664L11.7705 17.5811L14.1338 19.8096L11.6689 22.1064L2.66309 13.334C2.40432 13.1134 2.16054 12.8761 1.93359 12.623L1.92969 12.6191H1.93066C0.730736 11.2796 0.000122442 9.51122 0 7.57129C0 3.39007 3.3891 3.29867e-05 7.57031 0C9.17532 0 10.6629 0.500591 11.8877 1.35254C13.1124 0.500689 14.6002 0 16.2051 0Z"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="hp-spacer-lg"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ────────────────────────────────────────── -->
+    <!-- SCREEN 2: STANDOUTS -->
+    <!-- ────────────────────────────────────────── -->
+    <div class="hp-screen" data-screen="standouts">
+      <div class="hp-standouts-header">
+        <div class="hp-page-title">Standouts</div>
+        <button class="hp-roses-pill">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 4c-2.5 0-4 1.7-4 3.5 0 .8.3 1.5.8 2 .5.5 1.2.8 2 .8.6 0 1.2-.2 1.7-.5-.3.5-.5 1.1-.5 1.7 0 .8.3 1.5.8 2s1.2.8 2 .8c1.8 0 3.5-1.5 3.5-4 0-3.5-3-6.3-6.3-6.3z" stroke="#4B2D7A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 13v8M9 18l3 3 3-3" stroke="#4B2D7A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Roses (1)
+        </button>
+      </div>
+      <div class="hp-standouts-sub">
+        Outstanding content from people most your type. Refreshed daily. <b>Learn more</b>.
+      </div>
+
+      <div class="hp-standouts-deck">
+        <div class="hp-refresh-pill">Next refresh in <span class="hp-mono">05:27</span></div>
+        <div class="hp-standout-card">
+          <div class="hp-standout-card-2"></div>
+          <div class="hp-standout-photo"></div>
+          <div class="hp-standout-name-row">
+            <div class="hp-standout-avatar"></div>
+            <div class="hp-standout-name">Niels</div>
+          </div>
+        </div>
+      </div>
+      <div class="hp-spacer"></div>
+    </div>
+
+    <!-- ────────────────────────────────────────── -->
+    <!-- SCREEN 3: LIKES YOU -->
+    <!-- ────────────────────────────────────────── -->
+    <div class="hp-screen" data-screen="likes">
+      <div class="hp-likes-header">
+        <div class="hp-page-title">Likes You</div>
+      </div>
+      <div class="hp-likes-sub">
+        Your profile is seen sooner
+        <i class="ti ti-info-circle"></i>
+      </div>
+
+      <div class="hp-likes-tabs">
+        <button class="hp-sort-icon-btn" aria-label="Sort">
+          <i class="ti ti-arrows-down-up"></i>
+        </button>
+        <button class="hp-pill-tab active">Recent</button>
+        <button class="hp-pill-tab">Your type</button>
+        <button class="hp-pill-tab">Last active</button>
+        <button class="hp-pill-tab">Nearby</button>
+      </div>
+
+      <div class="hp-like-card">
+        <div class="hp-like-bubble">Liked your photo</div>
+        <div class="hp-like-name">Ivan</div>
+        <div class="hp-like-photo"></div>
+      </div>
+
+      <div class="hp-like-row-bottom">
+        <div class="hp-like-card-mini">
+          <div class="hp-like-bubble-mini">Liked your photo</div>
+        </div>
+        <div class="hp-like-card-mini tan">
+          <div class="hp-like-bubble-mini">You just met the fun…</div>
+        </div>
+      </div>
+      <div class="hp-spacer"></div>
+    </div>
+
+    <!-- ────────────────────────────────────────── -->
+    <!-- SCREEN 4: MATCHES -->
+    <!-- ────────────────────────────────────────── -->
+    <div class="hp-screen" data-screen="matches">
+      <div class="hp-matches-header">
+        <div class="hp-page-title">Matches</div>
+      </div>
+
+      <div class="hp-section-row">
+        <div class="hp-section-title">Your turn (4)</div>
+        <i class="ti ti-chevron-up"></i>
+      </div>
+
+      <div class="hp-match-row" data-action="open-chat">
+        <div class="hp-match-avatar hp-avatar-1"></div>
+        <div class="hp-match-info">
+          <div class="hp-match-name">Ohbad</div>
+          <div class="hp-match-msg">Start the chat with Ohbad</div>
+        </div>
+        <button class="hp-start-chat">Start chat</button>
+      </div>
+
+      <div class="hp-match-row">
+        <div class="hp-match-avatar hp-avatar-2"></div>
+        <div class="hp-match-info">
+          <div class="hp-match-name">Nick</div>
+          <div class="hp-match-msg">Wyd today?</div>
+        </div>
+      </div>
+
+      <div class="hp-match-row">
+        <div class="hp-match-avatar hp-avatar-3"></div>
+        <div class="hp-match-info">
+          <div class="hp-match-name">Daniel</div>
+          <div class="hp-match-msg muted">If u can make me</div>
+        </div>
+      </div>
+
+      <div class="hp-match-row">
+        <div class="hp-match-avatar hp-avatar-4"></div>
+        <div class="hp-match-info">
+          <div class="hp-match-name">Kristian</div>
+          <div class="hp-match-msg muted">Hey there cutie</div>
+        </div>
+      </div>
+
+      <div class="hp-section-row">
+        <div class="hp-section-title">Their turn (2)</div>
+        <i class="ti ti-chevron-up"></i>
+      </div>
+
+      <div class="hp-match-row">
+        <div class="hp-match-avatar hp-avatar-5"></div>
+        <div class="hp-match-info">
+          <div class="hp-match-name">Ivan</div>
+          <div class="hp-match-msg muted">Hi</div>
+        </div>
+      </div>
+
+      <div class="hp-spacer"></div>
+    </div>
+
+    <!-- ────────────────────────────────────────── -->
+    <!-- SCREEN 5: PROFILE -->
+    <!-- ────────────────────────────────────────── -->
+    <div class="hp-screen" data-screen="profile">
+      <div class="hp-profile-top">
+        <div class="hp-hinge-wordmark">
+          <img src="Assets/logos/Copy of hinge_black.png" alt="Hinge">
+        </div>
+        <div class="hp-profile-top-actions">
+          <button class="hp-icon-btn" aria-label="Filters">
+            <i class="ti ti-adjustments-horizontal"></i>
+          </button>
+          <button class="hp-icon-btn" aria-label="Settings">
+            <i class="ti ti-settings"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="hp-profile-avatar-section">
+        <div class="hp-profile-avatar-wrap">
+          <div class="hp-profile-avatar-ring">
+            <div class="hp-profile-avatar"></div>
+          </div>
+          <div class="hp-edit-pencil">
+            <i class="ti ti-pencil"></i>
+          </div>
+        </div>
+        <div class="hp-profile-name-row">
+          <div class="hp-profile-name">Alex</div>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 1l2.4 1.7 2.9-.4 1.6 2.5 2.7 1.2-.4 2.9 1.4 2.6-1.9 2.3.4 2.9-2.7 1.2-1.6 2.5-2.9-.4L12 23l-2.4-1.7-2.9.4-1.6-2.5-2.7-1.2.4-2.9L1.5 12 3.4 9.7 3 6.8l2.7-1.2L7.3 3.1l2.9.4L12 1z" fill="#A8A29A"/>
+            <path d="M8 12.5l2.5 2.5L16 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="hp-profile-tabs">
+        <div class="hp-profile-tab active">Get more</div>
+        <div class="hp-profile-tab">My Hinge</div>
+      </div>
+
+      <div class="hp-hingex-card">
+        <div class="hp-hingex-content">
+          <div class="hp-hingex-logo">
+            <img src="Assets/logos/Copy of hinge_white.png" alt="Hinge">
+            <i>X</i>
+          </div>
+          <div class="hp-hingex-text">Get seen sooner and go on 3x as many dates</div>
+          <button class="hp-hingex-cta">Upgrade</button>
+        </div>
+      </div>
+
+      <div class="hp-perk-card">
+        <div class="hp-perk-icon boost">
+          <i class="ti ti-bolt"></i>
+          <span class="hp-perk-counter">0</span>
+        </div>
+        <div>
+          <div class="hp-perk-title">Boost</div>
+          <div class="hp-perk-sub">Get seen by 11X more people</div>
+        </div>
+      </div>
+
+      <div class="hp-perk-card">
+        <div class="hp-perk-icon roses">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 4c-2.5 0-4 1.7-4 3.5 0 .8.3 1.5.8 2 .5.5 1.2.8 2 .8.6 0 1.2-.2 1.7-.5-.3.5-.5 1.1-.5 1.7 0 .8.3 1.5.8 2s1.2.8 2 .8c1.8 0 3.5-1.5 3.5-4 0-3.5-3-6.3-6.3-6.3z" stroke="#4B2D7A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 13v8M9 18l3 3 3-3" stroke="#4B2D7A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="hp-perk-counter">0</span>
+        </div>
+        <div>
+          <div class="hp-perk-title">Roses</div>
+          <div class="hp-perk-sub">2x as likely to lead to a date</div>
+        </div>
+      </div>
+
+      <div class="hp-spacer"></div>
+    </div>
+
+    <!-- ────────────────────────────────────────── -->
+    <!-- SCREEN 6: CHAT (Ohbad) -->
+    <!-- ────────────────────────────────────────── -->
+    <div class="hp-screen" data-screen="chat-ohbad">
+      <div class="hp-chat-header">
+        <button class="hp-chat-back-btn" id="hp-chat-back" aria-label="Back">
+          <i class="ti ti-chevron-left"></i>
+        </button>
+        <div class="hp-chat-name">Ohbad</div>
+        <button class="hp-chat-dots-btn" id="hp-chat-dots" aria-label="More options">
+          <i class="ti ti-dots"></i>
+        </button>
+      </div>
+
+      <div class="hp-chat-tabs">
+        <div class="hp-chat-tab active">Chat</div>
+        <div class="hp-chat-tab">Profile</div>
+      </div>
+
+      <div class="hp-chat-messages" id="hp-chat-messages">
+        <div class="hp-chat-timestamp">
+          <span class="day">Today</span>2:20 AM
+        </div>
+
+        <div class="hp-msg-row received">
+          <div class="hp-chat-avatar"></div>
+          <div class="hp-photo-msg">
+            <div class="hp-photo-msg-img"></div>
+            <div class="hp-photo-bubble">Liked your photo</div>
+          </div>
+        </div>
+
+        <div class="hp-chat-timestamp">
+          <span class="day">Today</span>1:42 PM
+        </div>
+
+        <div class="hp-msg-row system">
+          <div class="hp-bubble-system">Start the chat with Ohbad</div>
+        </div>
+      </div>
+
+      <div class="hp-double-tap-hint">Double tap to like a message</div>
+
+      <div class="hp-composer">
+        <div class="hp-composer-input">Send a message</div>
+        <button class="hp-composer-mic" aria-label="Voice message">
+          <i class="ti ti-microphone"></i>
+        </button>
+      </div>
+
+      <div class="hp-chat-home-indicator">
+        <div class="hp-chat-home-indicator-bar"></div>
+      </div>
+    </div>
+
+    <!-- Floating skip button — pinned above the tab bar on the home screen -->
+    <button class="hp-floating-x" id="hp-floating-x" aria-label="Skip">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M23.2568 2.82227L14.4707 11.7578L14.4727 11.7598L11.6553 14.6357L11.6484 14.6289L2.87012 23.5586L0 20.7363L8.7832 11.8018L0 3.13574L2.82715 0.269531L11.6055 8.93066L20.3867 0L23.2568 2.82227ZM23.5273 20.6934L20.7002 23.5586L14.8877 17.8252L16.1055 13.3701L23.5273 20.6934Z" fill="#1A1A1A"/>
+      </svg>
+    </button>
+
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="hp-tabbar-wrap">
+    <div class="hp-tabbar">
+      <button class="hp-tab" data-tab="home" aria-label="Discover">
+        <img class="hp-tab-icon is-default" src="Assets/icons/Home - Default.svg" alt="">
+        <img class="hp-tab-icon is-selected" src="Assets/icons/Home - Selected.svg" alt="">
+      </button>
+      <button class="hp-tab" data-tab="standouts" aria-label="Standouts">
+        <img class="hp-tab-icon is-default" src="Assets/icons/Standout - Default.svg" alt="">
+        <img class="hp-tab-icon is-selected" src="Assets/icons/Standout - Selected.svg" alt="">
+      </button>
+      <button class="hp-tab" data-tab="likes" aria-label="Likes you">
+        <img class="hp-tab-icon is-default" src="Assets/icons/Likes - Default.svg" alt="">
+        <img class="hp-tab-icon is-selected" src="Assets/icons/Likes - Selected.svg" alt="">
+        <span class="hp-tab-badge">50+</span>
+      </button>
+      <button class="hp-tab" data-tab="matches" aria-label="Matches">
+        <img class="hp-tab-icon is-default" src="Assets/icons/Match - Default.svg" alt="">
+        <img class="hp-tab-icon is-selected" src="Assets/icons/Match - Selected.svg" alt="">
+        <span class="hp-tab-badge">4</span>
+      </button>
+      <button class="hp-tab" data-tab="profile" aria-label="Profile">
+        <div class="hp-tab-avatar"></div>
+      </button>
+    </div>
+    <div class="hp-home-indicator">
+      <div class="hp-home-indicator-bar"></div>
+    </div>
+  </div>
+
+  <!-- Action Sheet (... menu) -->
+  <div class="hp-action-backdrop" id="hp-action-backdrop"></div>
+  <div class="hp-action-sheet" id="hp-action-sheet">
+    <div class="hp-action-group">
+      <button class="hp-action-btn">We Met</button>
+      <button class="hp-action-btn">Hide</button>
+      <button class="hp-action-btn">Unmatch</button>
+      <button class="hp-action-btn danger">Report</button>
+    </div>
+    <div class="hp-action-group">
+      <button class="hp-action-btn" id="hp-action-cancel">Cancel</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  const phone = document.getElementById('hp-phone');
+  const tabs = document.querySelectorAll('.hp-tab');
+  const screens = document.querySelectorAll('.hp-screen');
+
+  function setScreen(name) {
+    screens.forEach(s => s.classList.toggle('active', s.dataset.screen === name));
+    phone.dataset.activeScreen = name;
+    if (name === 'chat-ohbad') {
+      phone.classList.add('in-chat');
+    } else {
+      phone.classList.remove('in-chat');
+      tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+    }
+  }
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => setScreen(tab.dataset.tab));
+  });
+
+  // Open chat from match row
+  document.querySelectorAll('[data-action="open-chat"]').forEach(el => {
+    el.addEventListener('click', () => setScreen('chat-ohbad'));
+  });
+
+  // Back from chat → matches
+  const backBtn = document.getElementById('hp-chat-back');
+  if (backBtn) {
+    backBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setScreen('matches');
+    });
+  }
+
+  // Action sheet
+  const dotsBtn = document.getElementById('hp-chat-dots');
+  const actionBackdrop = document.getElementById('hp-action-backdrop');
+  const actionCancel = document.getElementById('hp-action-cancel');
+
+  function showActions() { phone.classList.add('show-actions'); }
+  function hideActions() { phone.classList.remove('show-actions'); }
+
+  if (dotsBtn) dotsBtn.addEventListener('click', showActions);
+  if (actionBackdrop) actionBackdrop.addEventListener('click', hideActions);
+  if (actionCancel) actionCancel.addEventListener('click', hideActions);
+
+  setScreen('home');
+})();
+</script>
+
+</body>
+</html>
